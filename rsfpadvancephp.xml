@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="system" method="upgrade">
+	<name>Advance PHP for RSForm!Pro</name>
+	<author>Vast Development Method</author>
+	<creationDate>July 2014</creationDate>
+	<copyright>(C) 2005-2021 Vast Development Method</copyright>
+	<license>GNU General Public License</license>
+	<authorEmail>support@vdm.io</authorEmail>
+	<authorUrl>www.vdm.io</authorUrl>
+	<version>3.0.0</version>
+	<description><![CDATA[PLG_SYSTEM_RSFPADVANCEPHP_DESC]]></description>
+	<scriptfile>script.php</scriptfile>
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/mysql/install.sql</file>
+		</sql>
+	</install>
+	<files>
+		<folder>sql</folder>
+		<filename plugin="rsfpadvancephp">rsfpadvancephp.php</filename>
+		<filename>index.html</filename>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/en-GB.plg_system_rsfpadvancephp.ini</language>
+		<language tag="en-GB">en-GB/en-GB.plg_system_rsfpadvancephp.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="display-settings-heading"
+					type="spacer"
+					class="text"
+					label="PLG_SYSTEM_RSFPADVANCEPHP_HEADDING"
+				/>
+				<field 
+					name="access" 
+					type="usergroup"
+					label="PLG_SYSTEM_RSFPADVANCEPHP_TARGET_GROUPS_LABEL"
+					description="PLG_SYSTEM_RSFPADVANCEPHP_TARGET_GROUPS_DESC" 
+					multiple="true" 
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
