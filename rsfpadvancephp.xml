@@ -1,73 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="6.0" type="plugin" group="system" method="upgrade">
-    <name>PLG_SYSTEM_RSFPADVANCEPHP</name>
-    <author>Vast Development Method</author>
-    <creationDate>August 2026</creationDate>
-    <copyright>(C) 2013-2026 Vast Development Method</copyright>
-    <license>GNU General Public License version 2 or later</license>
-    <authorEmail>support@vdm.io</authorEmail>
-    <authorUrl>https://www.vdm.io</authorUrl>
-    <version>4.0.0</version>
-    <description>PLG_SYSTEM_RSFPADVANCEPHP_DESC</description>
-    <namespace path="src">VDM\Plugin\System\Rsfpadvancephp</namespace>
-    <scriptfile>script.php</scriptfile>
-
-    <install>
-        <sql>
-            <file driver="mysql" charset="utf8mb4">sql/mysql/install.sql</file>
-        </sql>
-    </install>
-    <update>
-        <schemas>
-            <schemapath type="mysql">sql/mysql/updates</schemapath>
-        </schemas>
-    </update>
-    <uninstall>
-        <sql>
-            <file driver="mysql" charset="utf8mb4">sql/mysql/uninstall.sql</file>
-        </sql>
-    </uninstall>
-
-    <files>
-        <filename plugin="rsfpadvancephp">rsfpadvancephp.php</filename>
-        <filename>script.php</filename>
-        <filename>index.html</filename>
-        <folder>services</folder>
-        <folder>src</folder>
-        <folder>layouts</folder>
-        <folder>sql</folder>
-    </files>
-
-    <media destination="plg_system_rsfpadvancephp" folder="media">
-        <filename>joomla.asset.json</filename>
-        <folder>js</folder>
-        <folder>css</folder>
-    </media>
-
-    <languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.plg_system_rsfpadvancephp.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_system_rsfpadvancephp.sys.ini</language>
-        <language tag="fa-IR">fa-IR/fa-IR.plg_system_rsfpadvancephp.ini</language>
-        <language tag="fa-IR">fa-IR/fa-IR.plg_system_rsfpadvancephp.sys.ini</language>
-    </languages>
-
-    <config>
-        <fields name="params">
-            <fieldset name="basic">
-                <field
-                    name="display-settings-heading"
-                    type="spacer"
-                    class="text"
-                    label="PLG_SYSTEM_RSFPADVANCEPHP_HEADDING"
-                />
-                <field
-                    name="access"
-                    type="usergroup"
-                    label="PLG_SYSTEM_RSFPADVANCEPHP_TARGET_GROUPS_LABEL"
-                    description="PLG_SYSTEM_RSFPADVANCEPHP_TARGET_GROUPS_DESC"
-                    multiple="true"
-                />
-            </fieldset>
-        </fields>
-    </config>
+<extension version="3.0" type="plugin" group="system" method="upgrade">
+	<name>Advance PHP for RSForm!Pro</name>
+	<author>Vast Development Method</author>
+	<creationDate>July 2014</creationDate>
+	<copyright>(C) 2005-2021 Vast Development Method</copyright>
+	<license>GNU General Public License</license>
+	<authorEmail>support@vdm.io</authorEmail>
+	<authorUrl>www.vdm.io</authorUrl>
+	<version>3.0.0</version>
+	<description><![CDATA[PLG_SYSTEM_RSFPADVANCEPHP_DESC]]></description>
+	<scriptfile>script.php</scriptfile>
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/mysql/install.sql</file>
+		</sql>
+	</install>
+	<files>
+		<folder>sql</folder>
+		<filename plugin="rsfpadvancephp">rsfpadvancephp.php</filename>
+		<filename>index.html</filename>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/en-GB.plg_system_rsfpadvancephp.ini</language>
+		<language tag="en-GB">en-GB/en-GB.plg_system_rsfpadvancephp.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="display-settings-heading"
+					type="spacer"
+					class="text"
+					label="PLG_SYSTEM_RSFPADVANCEPHP_HEADDING"
+				/>
+				<field 
+					name="access" 
+					type="usergroup"
+					label="PLG_SYSTEM_RSFPADVANCEPHP_TARGET_GROUPS_LABEL"
+					description="PLG_SYSTEM_RSFPADVANCEPHP_TARGET_GROUPS_DESC" 
+					multiple="true" 
+				/>
+			</fieldset>
+		</fields>
+	</config>
 </extension>
