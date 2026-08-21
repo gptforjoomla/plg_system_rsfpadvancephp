@@ -1,84 +1,107 @@
 <?php
-
-declare(strict_types=1);
-
 /**
- * Installer script for Advance PHP for RSForm!Pro.
- *
- * The script performs compatibility checks only. It never copies files into the
- * RSForm!Pro component directory, keeping the extension self-contained for
- * Joomla 6. The legacy database tables are managed by SQL install/update files
- * and existing rows in #__rsform_advancephp are preserved during upgrades.
- */
+* @version 3.0.0
+* @package RSform!Pro Advance PHP plugin 3.0.0
+* @copyright (C) 2013-2021 Vast Development Method <http://www.vdm.io>
+* @license GPL, http://www.gnu.org/copyleft/gpl.html
+*/
 
-defined('_JEXEC') or die;
+// no direct access
+defined( '_JEXEC' ) or die( 'Restricted access' );
 
-use Joomla\CMS\Installer\InstallerAdapter;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Version;
-
-/**
- * Joomla installer hooks for the plugin.
- */
-final class PlgSystemRsfpadvancephpInstallerScript
+class plgSystemRsfpadvancephpInstallerScript
 {
-    /** @var string Minimum Joomla version supported by this modernized plugin. */
-    private const MIN_JOOMLA = '6.0.0';
+	protected static $minJoomla = '3.7.0';
+	protected static $minComponent = '3.0.0';
 
-    /** @var string Minimum PHP version supported by this modernized plugin. */
-    private const MIN_PHP = '8.3.0';
+	public function preflight($type, $parent)
+	{
+		if ($type == 'uninstall')
+		{
+			return true;
+		}
 
-    /**
-     * Validate the target environment before install or update.
-     *
-     * @param   string            $type    Install operation type.
-     * @param   InstallerAdapter  $parent  Joomla installer adapter.
-     *
-     * @return  bool  True when installation may continue.
-     */
-    public function preflight(string $type, InstallerAdapter $parent): bool
-    {
-        if ($type === 'uninstall') {
-            return true;
-        }
+		try
+		{		
+			$jversion = new JVersion();
+			if (!$jversion->isCompatible(static::$minJoomla))
+			{
+				throw new Exception(sprintf('Please upgrade to at least Joomla! %s before continuing!', static::$minJoomla));
+			}
 
-        if (version_compare(PHP_VERSION, self::MIN_PHP, '<')) {
-            $parent->getParent()->set('message', Text::sprintf('PLG_SYSTEM_RSFPADVANCEPHP_INSTALL_ERROR_PHP', self::MIN_PHP));
+			if (!file_exists(JPATH_ADMINISTRATOR.'/components/com_rsform/helpers/rsform.php'))
+			{
+				throw new Exception('Please install the RSForm! Pro component before continuing.');
+			}
 
-            return false;
-        }
+			if (!file_exists(JPATH_ADMINISTRATOR.'/components/com_rsform/helpers/assets.php') || !file_exists(JPATH_ADMINISTRATOR.'/components/com_rsform/helpers/version.php'))
+			{
+				throw new Exception(sprintf('Please upgrade RSForm! Pro to at least version %s before continuing!', static::$minComponent));
+			}
 
-        $version = new Version();
+			// Check version matches
+			require_once JPATH_ADMINISTRATOR.'/components/com_rsform/helpers/version.php';
 
-        if (!$version->isCompatible(self::MIN_JOOMLA)) {
-            $parent->getParent()->set('message', Text::sprintf('PLG_SYSTEM_RSFPADVANCEPHP_INSTALL_ERROR_JOOMLA', self::MIN_JOOMLA));
+			if (!class_exists('RSFormProVersion') || version_compare((string) new RSFormProVersion, static::$minComponent, '<'))
+			{
+				throw new Exception(sprintf('Please upgrade RSForm! Pro to at least version %s before continuing!', static::$minComponent));
+			}
 
-            return false;
-        }
+			if (!file_exists(JPATH_PLUGINS . '/system/rsfppayment/rsfppayment.php'))
+			{
+				throw new Exception('Please install the RSForm! Pro Payment Package before continuing.');
+			}
+		}
+		catch (Exception $e)
+		{
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			return false;
+		}
 
-        if (!is_file(JPATH_ADMINISTRATOR . '/components/com_rsform/helpers/rsform.php')) {
-            $parent->getParent()->set('message', Text::_('PLG_SYSTEM_RSFPADVANCEPHP_INSTALL_ERROR_RSFORM'));
+		return true;
+	}
 
-            return false;
-        }
+	public function postflight($type, $parent)
+	{
+		if ($type == 'update')
+		{
+			$this->runSQL($parent->getParent()->getPath('source'), 'install');
+		}
 
-        return true;
-    }
+		$installer = $parent->getParent();
+		$src = $installer->getPath('source').'/admin';
+		$dest = JPATH_ADMINISTRATOR.'/components/com_rsform';
 
-    /**
-     * Post-install hook.
-     *
-     * No component files are copied. The method exists to document the intended
-     * Joomla 6 self-contained architecture and to provide a future extension
-     * point for non-destructive migrations.
-     *
-     * @param   string            $type    Install operation type.
-     * @param   InstallerAdapter  $parent  Joomla installer adapter.
-     *
-     * @return  bool
-     */
-    public function postflight(string $type, InstallerAdapter $parent): bool
-    {
-        return true;
-    }
+		JFolder::copy($src, $dest, '', true);
+	}
+
+	protected function runSQL($source, $file)
+	{
+		$db = JFactory::getDbo();
+		$driver = strtolower($db->name);
+
+		if (strpos($driver, 'mysql') !== false)
+		{
+			$driver = 'mysql';
+		}
+
+		$sqlfile = $source . '/sql/' . $driver . '/' . $file . '.sql';
+
+		if (file_exists($sqlfile))
+		{
+			$buffer = file_get_contents($sqlfile);
+			if ($buffer !== false)
+			{
+				$queries = $db->splitSql($buffer);
+				foreach ($queries as $query)
+				{
+					$query = trim($query);
+					if ($query != '')
+					{
+						$db->setQuery($query)->execute();
+					}
+				}
+			}
+		}
+	}
 }
